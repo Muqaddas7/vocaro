@@ -1,0 +1,7 @@
+vocaro-backend/venv/
+vocaro-backend/__pycache__/
+vocaro-backend/.env
+vocaro-backend/*.db
+vocaro-frontend/node_modules/
+vocaro-frontend/dist/
+.DS_Store
