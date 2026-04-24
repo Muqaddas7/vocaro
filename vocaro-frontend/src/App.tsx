@@ -1,16 +1,28 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
+import LandingPage from "./pages/LandingPage";
+import Dashboard from "./pages/Dashboard";
+import MeetingPage from "./pages/MeetingPage";
+
 function App() {
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-5xl font-bold text-violet-400 mb-4">Vocaro</h1>
-        <p className="text-slate-400 text-xl">
-          Every word. Every action. Every outcome.
-        </p>
-        <div className="mt-8 px-6 py-3 bg-violet-600 text-white rounded-full inline-block">
-          Setup Complete ✅
-        </div>
-      </div>
-    </div>
+    <BrowserRouter>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          style: {
+            background: "#1e293b",
+            color: "#fff",
+            border: "1px solid #334155",
+          },
+        }}
+      />
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/meeting/:id" element={<MeetingPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
