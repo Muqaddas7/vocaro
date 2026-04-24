@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from models.database import create_tables
 from routers import meetings
+from routers import audio
 
 # App banao
 app = FastAPI(
@@ -24,8 +25,9 @@ create_tables()
 
 # Routers add karo
 app.include_router(meetings.router)
+app.include_router(audio.router)
 
-# Pehla endpoint
+# Root endpoint
 @app.get("/")
 def root():
     return {
