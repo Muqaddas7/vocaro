@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from models.database import get_db, Meeting
+from services.ai_service import generate_summary
 import uuid
-import os
 
 router = APIRouter(prefix="/meetings", tags=["Meetings"])
 
@@ -31,6 +31,39 @@ def create_meeting(title: str = "New Meeting", db: Session = Depends(get_db)):
     db.commit()
     db.refresh(meeting)
     return {"message": "Meeting created!", "meeting": meeting}
+
+# AI Summary generate karo
+@router.post("/{meeting_id}/summarize")
+def summarize_meeting(meeting_id: str, db: Session = Depends(get_db)):
+    meeting = db.query(Meeting).filter(Meeting.id == meeting_id).first()
+    if not meeting:
+        raise HTTPException(status_code=404, detail="Meeting not found")
+    if not meeting.transcript:
+        raise HTTPException(status_code=400, detail="Pehle audio upload karo!")
+
+    # AI se summary lo
+    result = generate_summary(meeting.transcript)
+
+    if not result["success"]:
+        raise HTTPException(status_code=500, detail=result["error"])
+
+    import json
+    data = result["data"]
+
+    # Database mein save karo
+    meeting.summary = data.get("summary", "")
+    meeting.action_items = json.dumps(data.get("action_items", []))
+    db.commit()
+    db.refresh(meeting)
+
+    return {
+        "message": "✅ Summary ready!",
+        "meeting_id": meeting_id,
+        "summary": data.get("summary"),
+        "action_items": data.get("action_items"),
+        "decisions": data.get("decisions"),
+        "key_topics": data.get("key_topics")
+    }
 
 # Meeting delete karo
 @router.delete("/{meeting_id}")
