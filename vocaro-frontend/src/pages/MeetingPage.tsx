@@ -47,7 +47,8 @@ export default function MeetingPage() {
     try {
       await audioApi.upload(id!, file);
       toast.success("Audio transcribe ho gaya!", { id: "upload" });
-      loadMeeting();
+      await loadMeeting();
+      window.location.reload();
     } catch (err) {
       toast.error("Upload fail ho gaya!", { id: "upload" });
     } finally {
@@ -67,7 +68,7 @@ export default function MeetingPage() {
         key_topics: res.data.key_topics,
       });
       toast.success("Summary ready!", { id: "summarize" });
-      loadMeeting();
+      await loadMeeting();
     } catch (err) {
       toast.error("Summary fail ho gayi!", { id: "summarize" });
     } finally {

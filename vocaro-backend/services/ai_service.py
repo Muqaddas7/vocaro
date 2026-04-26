@@ -1,47 +1,44 @@
-from openai import OpenAI
+from groq import Groq
 import os
+import json
+import traceback
 from dotenv import load_dotenv
 
 load_dotenv()
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 def generate_summary(transcript: str) -> dict:
-    """Transcript se summary aur action items banao"""
     try:
+        print(f"🤖 AI Summary generating with Groq...")
+        
         response = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="llama-3.3-70b-versatile",
             messages=[
                 {
                     "role": "system",
-                    "content": """You are an expert meeting assistant.
-                    Analyze the meeting transcript and provide:
-                    1. A concise summary (3-5 sentences)
-                    2. Key action items with owner names if mentioned
-                    3. Important decisions made
-                    Format as JSON."""
+                    "content": "You are an expert meeting assistant. Analyze the meeting transcript and return ONLY a JSON object with keys: summary, action_items (array), decisions (array), key_topics (array). No other text, no markdown."
                 },
                 {
                     "role": "user",
-                    "content": f"""Analyze this meeting transcript:
-                    
-{transcript}
-
-Return JSON with this structure:
-{{
-    "summary": "brief summary here",
-    "action_items": ["action 1", "action 2"],
-    "decisions": ["decision 1", "decision 2"],
-    "key_topics": ["topic 1", "topic 2"]
-}}"""
+                    "content": f"Analyze this transcript: {transcript}"
                 }
             ],
-            response_format={"type": "json_object"}
+            max_tokens=1000
         )
 
-        import json
-        result = json.loads(response.choices[0].message.content)
+        text = response.choices[0].message.content
+        print(f"✅ Groq Response: {text[:100]}")
+        
+        text = text.strip()
+        if "```" in text:
+            text = text.split("```")[1]
+            if text.startswith("json"):
+                text = text[4:]
+        
+        result = json.loads(text)
         return {"success": True, "data": result}
 
     except Exception as e:
+        print(f"❌ AI ERROR: {traceback.format_exc()}")
         return {"success": False, "error": str(e)}

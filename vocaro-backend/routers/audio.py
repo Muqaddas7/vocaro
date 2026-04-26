@@ -4,11 +4,9 @@ from models.database import get_db, Meeting
 from services.audio_service import transcribe_audio
 import tempfile
 import os
-import uuid
 
 router = APIRouter(prefix="/audio", tags=["Audio"])
 
-# Audio upload endpoint
 @router.post("/upload/{meeting_id}")
 async def upload_audio(
     meeting_id: str,
@@ -20,39 +18,38 @@ async def upload_audio(
     if not meeting:
         raise HTTPException(status_code=404, detail="Meeting not found")
 
-    # File format check karo
-    allowed = ["audio/mpeg", "audio/wav", "audio/mp4", "audio/m4a", "audio/webm"]
-    if file.content_type not in allowed:
+    # File extension se check karo
+    filename = file.filename or ""
+    ext = os.path.splitext(filename)[1].lower()
+    allowed_extensions = ['.mp3', '.wav', '.mp4', '.m4a', '.webm', '.ogg', '.flac', '.opus', '.3gp', '.aac']
+    
+    if ext not in allowed_extensions:
         raise HTTPException(
             status_code=400,
-            detail=f"Format supported nahi: {file.content_type}"
+            detail=f"Format supported nahi: {ext}"
         )
 
     # Temp file mein save karo
-    suffix = os.path.splitext(file.filename)[1]
-    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+    with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp:
         content = await file.read()
         tmp.write(content)
         tmp_path = tmp.name
 
     try:
-        # Whisper se transcribe karo
         result = transcribe_audio(tmp_path)
 
         if not result["success"]:
             raise HTTPException(status_code=500, detail=result["error"])
 
-        # Database mein save karo
         meeting.transcript = result["transcript"]
         db.commit()
         db.refresh(meeting)
 
         return {
-            "message": "✅ Audio transcribed!",
+            "message": "Audio transcribed!",
             "meeting_id": meeting_id,
             "transcript": result["transcript"],
             "language": result["language"]
         }
     finally:
-        # Temp file delete karo
         os.unlink(tmp_path)

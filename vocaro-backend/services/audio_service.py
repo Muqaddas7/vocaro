@@ -1,8 +1,7 @@
 import whisper
 import os
-import tempfile
+import traceback
 
-# Whisper model load karo (pehli baar download hoga)
 model = None
 
 def get_model():
@@ -14,17 +13,20 @@ def get_model():
     return model
 
 def transcribe_audio(file_path: str) -> dict:
-    """Audio file ko text mein convert karo"""
     try:
         m = get_model()
         print(f"🎵 Transcribing: {file_path}")
-        result = m.transcribe(file_path)
+        result = m.transcribe(file_path, fp16=False)
+        transcript = str(result.get("text", "")).strip()
+        language = str(result.get("language", "unknown"))
+        print(f"✅ Transcript: {transcript[:50]}")
         return {
             "success": True,
-            "transcript": result["text"],
-            "language": result.get("language", "unknown")
+            "transcript": transcript,
+            "language": language
         }
     except Exception as e:
+        print(f"❌ FULL ERROR: {traceback.format_exc()}")
         return {
             "success": False,
             "error": str(e),
