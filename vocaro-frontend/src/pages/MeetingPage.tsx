@@ -2,13 +2,13 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  Mic,
   ArrowLeft,
   Upload,
   Brain,
   CheckSquare,
   FileText,
   Loader,
+  Radio,
 } from "lucide-react";
 import { meetingsApi, audioApi } from "../utils/api";
 import type { Meeting, MeetingSummary } from "../types";
@@ -31,8 +31,8 @@ export default function MeetingPage() {
     try {
       const res = await meetingsApi.getOne(id!);
       setMeeting(res.data);
-    } catch (err) {
-      toast.error("Meeting nahi mili!");
+    } catch {
+      toast.error("Session not found");
       navigate("/dashboard");
     } finally {
       setLoading(false);
@@ -43,14 +43,14 @@ export default function MeetingPage() {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
-    toast.loading("Audio upload ho raha hai...", { id: "upload" });
+    toast.loading("Processing audio...", { id: "upload" });
     try {
       await audioApi.upload(id!, file);
-      toast.success("Audio transcribe ho gaya!", { id: "upload" });
+      toast.success("Transcription complete", { id: "upload" });
       await loadMeeting();
       window.location.reload();
-    } catch (err) {
-      toast.error("Upload fail ho gaya!", { id: "upload" });
+    } catch {
+      toast.error("Upload failed", { id: "upload" });
     } finally {
       setUploading(false);
     }
@@ -58,7 +58,7 @@ export default function MeetingPage() {
 
   const handleSummarize = async () => {
     setSummarizing(true);
-    toast.loading("AI summary bana raha hai...", { id: "summarize" });
+    toast.loading("Generating intelligence...", { id: "summarize" });
     try {
       const res = await meetingsApi.summarize(id!);
       setSummary({
@@ -67,10 +67,10 @@ export default function MeetingPage() {
         decisions: res.data.decisions,
         key_topics: res.data.key_topics,
       });
-      toast.success("Summary ready!", { id: "summarize" });
+      toast.success("Analysis complete", { id: "summarize" });
       await loadMeeting();
-    } catch (err) {
-      toast.error("Summary fail ho gayi!", { id: "summarize" });
+    } catch {
+      toast.error("Analysis failed", { id: "summarize" });
     } finally {
       setSummarizing(false);
     }
@@ -78,51 +78,73 @@ export default function MeetingPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#020B18] flex items-center justify-center">
+        <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
-      <nav className="flex items-center justify-between px-8 py-6 border-b border-slate-800">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => navigate("/dashboard")}
-            className="p-2 hover:bg-slate-800 rounded-xl transition-all"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <div className="flex items-center gap-2">
-            <Mic className="w-6 h-6 text-violet-400" />
-            <span className="font-semibold">{meeting?.title}</span>
+    <div className="min-h-screen bg-[#020B18] text-white">
+      {/* Grid overlay */}
+      <div
+        className="fixed inset-0 opacity-[0.02] pointer-events-none"
+        style={{
+          backgroundImage: `linear-gradient(rgba(56,189,248,0.8) 1px, transparent 1px), linear-gradient(90deg, rgba(56,189,248,0.8) 1px, transparent 1px)`,
+          backgroundSize: "60px 60px",
+        }}
+      />
+
+      <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-blue-600/5 rounded-full blur-[120px] pointer-events-none" />
+
+      {/* Navbar */}
+      <nav className="relative z-10 flex items-center gap-4 px-10 py-5 border-b border-white/[0.06]">
+        <button
+          onClick={() => navigate("/dashboard")}
+          className="p-2 hover:bg-white/[0.06] rounded-lg transition-all duration-200 text-white/60 hover:text-white"
+        >
+          <ArrowLeft className="w-4 h-4" />
+        </button>
+        <div
+          className="flex items-center gap-2 cursor-pointer"
+          onClick={() => navigate("/")}
+        >
+          <div className="w-7 h-7 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-lg flex items-center justify-center">
+            <Radio className="w-3.5 h-3.5 text-white" />
           </div>
+          <span className="text-base font-black tracking-widest">VOCARO</span>
         </div>
+        <span className="text-white/30 text-xs font-mono">/</span>
+        <span className="text-white/60 text-xs font-mono">
+          {meeting?.title}
+        </span>
       </nav>
 
-      <div className="max-w-4xl mx-auto px-8 py-10 space-y-6">
+      <div className="relative z-10 max-w-3xl mx-auto px-10 py-10 space-y-4">
+        {/* Upload */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-8 bg-slate-900 border border-slate-800 rounded-2xl"
+          className="p-8 rounded-xl border border-white/[0.08] bg-white/[0.02]"
         >
-          <h2 className="text-xl font-bold mb-2 flex items-center gap-2">
-            <Upload className="w-5 h-5 text-violet-400" />
-            Upload Meeting Audio
+          <h2 className="text-xs font-bold uppercase tracking-widest text-white/70 mb-1 font-mono">
+            Audio Input
           </h2>
-          <p className="text-slate-400 text-sm mb-6">
-            MP3, WAV, MP4, M4A formats supported
+          <p className="text-white/60 text-xs mb-6">
+            MP3, WAV, MP4, M4A supported
           </p>
-          <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-slate-700 hover:border-violet-500 rounded-xl cursor-pointer transition-all bg-slate-800/50">
+
+          <label className="flex flex-col items-center justify-center w-full h-36 border border-dashed border-white/[0.10] hover:border-blue-500/40 rounded-xl cursor-pointer transition-all duration-200 bg-white/[0.01] hover:bg-blue-500/[0.03] group">
             <div className="flex flex-col items-center gap-3">
               {uploading ? (
-                <Loader className="w-10 h-10 text-violet-400 animate-spin" />
+                <Loader className="w-8 h-8 text-blue-400 animate-spin" />
               ) : (
-                <Upload className="w-10 h-10 text-slate-500" />
+                <Upload className="w-8 h-8 text-white/30 group-hover:text-blue-400 transition-colors duration-200" />
               )}
-              <span className="text-slate-400 text-sm">
-                {uploading ? "Uploading..." : "Click to upload audio file"}
+              <span className="text-white/50 text-xs group-hover:text-white/70 transition-colors">
+                {uploading
+                  ? "Processing..."
+                  : "Drop audio file or click to browse"}
               </span>
             </div>
             <input
@@ -135,69 +157,79 @@ export default function MeetingPage() {
           </label>
         </motion.div>
 
+        {/* Transcript */}
         {meeting?.transcript && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            className="p-8 bg-slate-900 border border-slate-800 rounded-2xl"
+            className="p-8 rounded-xl border border-white/[0.08] bg-white/[0.02]"
           >
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold flex items-center gap-2">
-                <FileText className="w-5 h-5 text-violet-400" />
-                Transcript
-              </h2>
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2">
+                <FileText className="w-4 h-4 text-blue-400" />
+                <h2 className="text-xs font-bold uppercase tracking-widest text-white/70 font-mono">
+                  Transcript
+                </h2>
+              </div>
               <button
                 onClick={handleSummarize}
                 disabled={summarizing}
-                className="flex items-center gap-2 px-5 py-2 bg-violet-600 hover:bg-violet-700 rounded-full text-sm font-medium transition-all disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-xs font-semibold transition-all duration-200 disabled:opacity-50 hover:shadow-lg hover:shadow-blue-500/20"
               >
                 {summarizing ? (
-                  <Loader className="w-4 h-4 animate-spin" />
+                  <Loader className="w-3.5 h-3.5 animate-spin" />
                 ) : (
-                  <Brain className="w-4 h-4" />
+                  <Brain className="w-3.5 h-3.5" />
                 )}
-                {summarizing ? "Analyzing..." : "Generate Summary"}
+                {summarizing ? "Analyzing..." : "Generate Intelligence"}
               </button>
             </div>
-            <div className="bg-slate-800 rounded-xl p-4 max-h-48 overflow-y-auto">
-              <p className="text-slate-300 text-sm leading-relaxed">
+            <div className="bg-white/[0.02] border border-white/[0.06] rounded-lg p-4 max-h-44 overflow-y-auto">
+              <p className="text-white/75 text-sm leading-relaxed">
                 {meeting.transcript}
               </p>
             </div>
           </motion.div>
         )}
 
+        {/* Results */}
         {(summary || meeting?.summary) && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             className="space-y-4"
           >
-            <div className="p-6 bg-slate-900 border border-slate-800 rounded-2xl">
-              <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
-                <Brain className="w-5 h-5 text-violet-400" />
-                AI Summary
-              </h3>
-              <p className="text-slate-300 leading-relaxed">
+            {/* AI Summary */}
+            <div className="p-8 rounded-xl border border-blue-500/20 bg-blue-500/[0.04]">
+              <div className="flex items-center gap-2 mb-4">
+                <Brain className="w-4 h-4 text-blue-400" />
+                <h3 className="text-xs font-bold uppercase tracking-widest text-white/70 font-mono">
+                  AI Summary
+                </h3>
+              </div>
+              <p className="text-white/80 text-sm leading-relaxed">
                 {summary?.summary || meeting?.summary}
               </p>
             </div>
 
+            {/* Action Items */}
             {summary?.action_items && summary.action_items.length > 0 && (
-              <div className="p-6 bg-slate-900 border border-slate-800 rounded-2xl">
-                <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
-                  <CheckSquare className="w-5 h-5 text-green-400" />
-                  Action Items
-                </h3>
-                <ul className="space-y-2">
+              <div className="p-8 rounded-xl border border-emerald-500/20 bg-emerald-500/[0.03]">
+                <div className="flex items-center gap-2 mb-5">
+                  <CheckSquare className="w-4 h-4 text-emerald-400" />
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-white/70 font-mono">
+                    Action Items
+                  </h3>
+                </div>
+                <ul className="space-y-3">
                   {summary.action_items.map((item, i) => (
                     <li
                       key={i}
-                      className="flex items-start gap-3 text-slate-300"
+                      className="flex items-start gap-3 text-white/75 text-sm"
                     >
-                      <div className="w-5 h-5 rounded-full bg-green-500/10 border border-green-500/30 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <span className="text-green-400 text-xs">{i + 1}</span>
-                      </div>
+                      <span className="text-emerald-400/70 font-mono text-xs mt-0.5 w-5 shrink-0">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
                       {item}
                     </li>
                   ))}
@@ -205,17 +237,20 @@ export default function MeetingPage() {
               </div>
             )}
 
+            {/* Key Topics */}
             {summary?.key_topics && summary.key_topics.length > 0 && (
-              <div className="p-6 bg-slate-900 border border-slate-800 rounded-2xl">
-                <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-blue-400" />
-                  Key Topics
-                </h3>
+              <div className="p-8 rounded-xl border border-white/[0.08] bg-white/[0.02]">
+                <div className="flex items-center gap-2 mb-5">
+                  <FileText className="w-4 h-4 text-white/50" />
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-white/70 font-mono">
+                    Key Topics
+                  </h3>
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {summary.key_topics.map((topic, i) => (
                     <span
                       key={i}
-                      className="px-3 py-1 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-full text-sm"
+                      className="px-3 py-1.5 bg-white/[0.05] border border-white/[0.10] text-white/60 rounded-lg text-xs font-mono"
                     >
                       {topic}
                     </span>
