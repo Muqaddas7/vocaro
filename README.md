@@ -1,36 +1,69 @@
-# 🎙️ Vocaro — AI Meeting Intelligence Platform
+# VOCARO — AI Meeting Intelligence Platform
 
-> Every Word. Every Action. Every Outcome.
+> Stop Taking Notes. Start Taking Action.
 
-Vocaro is a full-stack AI-powered meeting intelligence platform that converts audio recordings into actionable insights using Speech Recognition and Large Language Models.
+VOCARO is a full-stack AI-powered meeting intelligence platform that converts audio recordings into structured summaries, action items, and key decisions using Speech Recognition and Large Language Models.
 
-## ✨ Features
+---
 
-- 🎙️ **Audio Transcription** — Upload meeting audio, get instant text using OpenAI Whisper
-- 🤖 **AI Summary** — Groq LLaMA generates concise meeting summaries
-- ✅ **Action Items** — Automatically extracts tasks and action items
-- 📊 **Key Topics** — Identifies main discussion points
-- 🗂️ **Meeting History** — All meetings stored and searchable
+## Architecture
 
-## 🛠️ Tech Stack
+Audio Input
+│
+▼
+┌─────────────────────────────────────────────────────┐
+│ React Frontend │
+│ Landing Page / Dashboard / Meeting View │
+└─────────────────────┬───────────────────────────────┘
+│ HTTP / REST API
+▼
+┌─────────────────────────────────────────────────────┐
+│ FastAPI Backend │
+│ │
+│ ┌─────────────┐ ┌──────────────────────┐ │
+│ │ Whisper │ │ Groq LLaMA 3 │ │
+│ │ (STT) │───────▶│ (Summarization) │ │
+│ └─────────────┘ └──────────────────────┘ │
+│ │ │ │
+│ ▼ ▼ │
+│ ┌──────────────────────────────────────────────┐ │
+│ │ SQLite Database │ │
+│ │ Meetings / Transcripts / Summaries │ │
+│ └──────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────┘
 
-### Frontend
+---
+
+## Features
+
+- **Voice Transcription** — Upload any meeting audio. Whisper AI transcribes speech to text with high accuracy.
+- **AI Intelligence** — Groq LLaMA 3 analyzes transcripts and generates structured summaries.
+- **Action Extraction** — Every task, commitment, and decision is automatically identified.
+- **Key Topics** — Main discussion points are categorized and displayed.
+- **Meeting History** — All sessions are stored and accessible from the dashboard.
+
+---
+
+## Tech Stack
+
+**Frontend**
 
 - React 18 + TypeScript
-- Tailwind CSS
-- Framer Motion
-- React Router
+- Tailwind CSS + Framer Motion
+- React Router + Zustand
 
-### Backend
+**Backend**
 
 - FastAPI (Python)
 - SQLite + SQLAlchemy
-- OpenAI Whisper (Speech-to-Text)
-- Groq LLaMA (AI Summary)
+- OpenAI Whisper — Speech to Text
+- Groq LLaMA 3 — AI Summarization
 
-## 🚀 Getting Started
+---
 
-### Backend
+## Getting Started
+
+**Backend**
 
 ```bash
 cd vocaro-backend
@@ -40,7 +73,7 @@ pip install -r requirements.txt
 uvicorn main:app --reload
 ```
 
-### Frontend
+**Frontend**
 
 ```bash
 cd vocaro-frontend
@@ -48,20 +81,34 @@ npm install
 npm run dev
 ```
 
-## 📁 Project Structure
+---
+
+## Project Structure
 
 vocaro/
 ├── vocaro-backend/
 │ ├── main.py
 │ ├── models/
+│ │ └── database.py
 │ ├── routers/
+│ │ ├── meetings.py
+│ │ └── audio.py
 │ └── services/
+│ ├── audio_service.py
+│ └── ai_service.py
 └── vocaro-frontend/
 └── src/
 ├── pages/
-├── components/
-└── utils/
+│ ├── LandingPage.tsx
+│ ├── Dashboard.tsx
+│ └── MeetingPage.tsx
+├── utils/
+│ └── api.ts
+└── types/
+└── index.ts
 
-## 👩‍💻 Built By
+---
 
-Muqaddas — AI Engineer | BS Artificial Intelligence
+## Built By
+
+**Muqaddas** — AI Engineer | BS Artificial Intelligence
