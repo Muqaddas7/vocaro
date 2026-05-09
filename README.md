@@ -7,49 +7,31 @@ sdk: docker
 pinned: false
 ---
 
-# VOCARO — AI Meeting Intelligence Platform
+# Vocaro — AI Meeting Intelligence Platform
 
 > Stop Taking Notes. Start Taking Action.
 
-VOCARO is a full-stack AI-powered meeting intelligence platform that converts audio recordings into structured summaries, action items, and key decisions using Speech Recognition and Large Language Models.
+Vocaro is a full-stack AI-powered meeting intelligence platform that converts audio recordings into structured summaries, action items, and key decisions using Speech Recognition and Large Language Models.
 
 ---
 
-## Architecture
+## Live Links
 
-Audio Input
-│
-▼
-┌─────────────────────────────────────────────────────┐
-│ React Frontend │
-│ Landing Page / Dashboard / Meeting View │
-└─────────────────────┬───────────────────────────────┘
-│ HTTP / REST API
-▼
-┌─────────────────────────────────────────────────────┐
-│ FastAPI Backend │
-│ │
-│ ┌─────────────┐ ┌──────────────────────┐ │
-│ │ Whisper │ │ Groq LLaMA 3 │ │
-│ │ (STT) │───────▶│ (Summarization) │ │
-│ └─────────────┘ └──────────────────────┘ │
-│ │ │ │
-│ ▼ ▼ │
-│ ┌──────────────────────────────────────────────┐ │
-│ │ SQLite Database │ │
-│ │ Meetings / Transcripts / Summaries │ │
-│ └──────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────┘
+|          | Link                                                                                     |
+| -------- | ---------------------------------------------------------------------------------------- |
+| Live App | [vocaro.vercel.app](https://vocaro.vercel.app)                                           |
+| API Docs | [muqaddas7-vocaro-backend.hf.space/docs](https://muqaddas7-vocaro-backend.hf.space/docs) |
+| GitHub   | [github.com/Muqaddas7/vocaro](https://github.com/Muqaddas7/vocaro)                       |
 
 ---
 
 ## Features
 
-- **Voice Transcription** — Upload any meeting audio. Whisper AI transcribes speech to text with high accuracy.
-- **AI Intelligence** — Groq LLaMA 3 analyzes transcripts and generates structured summaries.
-- **Action Extraction** — Every task, commitment, and decision is automatically identified.
-- **Key Topics** — Main discussion points are categorized and displayed.
-- **Meeting History** — All sessions are stored and accessible from the dashboard.
+- Upload any meeting audio — Whisper AI transcribes speech to text with high accuracy
+- Groq LLaMA 3 analyzes transcripts and generates structured summaries
+- Every task, commitment, and decision is automatically identified
+- Main discussion points are categorized and displayed
+- All sessions are stored and accessible from the dashboard
 
 ---
 
@@ -67,6 +49,35 @@ Audio Input
 - SQLite + SQLAlchemy
 - OpenAI Whisper — Speech to Text
 - Groq LLaMA 3 — AI Summarization
+- Docker — Containerization
+
+---
+
+## Architecture
+
+Audio Input
+│
+▼
+┌─────────────────────────────────┐
+│ React Frontend │
+│ Landing / Dashboard / Meeting │
+└────────────────┬────────────────┘
+│ HTTP / REST API
+▼
+┌─────────────────────────────────┐
+│ FastAPI Backend │
+│ │
+│ ┌─────────┐ ┌─────────────┐ │
+│ │ Whisper │──▶│ Groq LLaMA3 │ │
+│ │ (STT) │ │ (Summary) │ │
+│ └─────────┘ └─────────────┘ │
+│ │ │
+│ ▼ │
+│ ┌─────────────┐ │
+│ │ SQLite │ │
+│ │ Database │ │
+│ └─────────────┘ │
+└─────────────────────────────────┘
 
 ---
 
@@ -98,23 +109,13 @@ vocaro/
 ├── vocaro-backend/
 │ ├── main.py
 │ ├── models/
-│ │ └── database.py
 │ ├── routers/
-│ │ ├── meetings.py
-│ │ └── audio.py
 │ └── services/
-│ ├── audio_service.py
-│ └── ai_service.py
 └── vocaro-frontend/
 └── src/
 ├── pages/
-│ ├── LandingPage.tsx
-│ ├── Dashboard.tsx
-│ └── MeetingPage.tsx
 ├── utils/
-│ └── api.ts
 └── types/
-└── index.ts
 
 ---
 
