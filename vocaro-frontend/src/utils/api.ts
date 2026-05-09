@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Backend ka address
-const BASE_URL = "http://127.0.0.1:8000";
+const BASE_URL = "https://muqaddas7-vocaro-backend.hf.space";
 
 export const api = axios.create({
   baseURL: BASE_URL,
