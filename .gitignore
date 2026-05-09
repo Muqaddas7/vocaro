@@ -8,3 +8,6 @@ vocaro-frontend/dist/
 **/__pycache__/
 **/*.pyc
 **/*.pyo
+*.png
+*.jpg
+*.jpeg
