@@ -9,10 +9,9 @@ Vocaro is a full-stack AI-powered meeting intelligence platform that converts au
 ## Live Links
 
 |          | Link                                                                                     |
-| -------- | ---------------------------------------------------------------------------------------- |
+| -------- | ---------------------------------------------------------------------------------------- | --- |
 | Live App | [vocaro.vercel.app](https://vocaro.vercel.app)                                           |
-| API Docs | [muqaddas7-vocaro-backend.hf.space/docs](https://muqaddas7-vocaro-backend.hf.space/docs) |
-| GitHub   | [github.com/Muqaddas7/vocaro](https://github.com/Muqaddas7/vocaro)                       |
+| API Docs | [muqaddas7-vocaro-backend.hf.space/docs](https://muqaddas7-vocaro-backend.hf.space/docs) |     |
 
 ---
 
