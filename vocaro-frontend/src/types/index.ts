@@ -1,4 +1,3 @@
-// Meeting ka type — har meeting mein yeh data hoga
 export interface Meeting {
   id: string;
   title: string;
@@ -9,14 +8,12 @@ export interface Meeting {
   created_at: string;
 }
 
-// API response ka type
 export interface ApiResponse<T> {
   message: string;
   data?: T;
   error?: string;
 }
 
-// Summary ka type
 export interface MeetingSummary {
   summary: string;
   action_items: string[];

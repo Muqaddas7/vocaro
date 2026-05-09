@@ -220,7 +220,7 @@ export default function LandingPage() {
       </section>
 
       <footer className="relative z-10 text-center py-8 border-t border-white/[0.04] text-white/40 text-xs font-mono tracking-widest">
-        {"VOCARO AI - Built by Muqaddas - 2026"}
+        <p>{"VOCARO AI - Built by Muqaddas - 2026"}</p>
       </footer>
 
       <style>{`

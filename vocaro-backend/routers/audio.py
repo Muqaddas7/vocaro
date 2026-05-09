@@ -13,23 +13,20 @@ async def upload_audio(
     file: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
-    # Meeting check karo
     meeting = db.query(Meeting).filter(Meeting.id == meeting_id).first()
     if not meeting:
         raise HTTPException(status_code=404, detail="Meeting not found")
 
-    # File extension se check karo
     filename = file.filename or ""
     ext = os.path.splitext(filename)[1].lower()
     allowed_extensions = ['.mp3', '.wav', '.mp4', '.m4a', '.webm', '.ogg', '.flac', '.opus', '.3gp', '.aac']
-    
+
     if ext not in allowed_extensions:
         raise HTTPException(
             status_code=400,
-            detail=f"Format supported nahi: {ext}"
+            detail=f"Unsupported format: {ext}"
         )
 
-    # Temp file mein save karo
     with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp:
         content = await file.read()
         tmp.write(content)
@@ -46,7 +43,7 @@ async def upload_audio(
         db.refresh(meeting)
 
         return {
-            "message": "Audio transcribed!",
+            "message": "Audio transcribed successfully",
             "meeting_id": meeting_id,
             "transcript": result["transcript"],
             "language": result["language"]
